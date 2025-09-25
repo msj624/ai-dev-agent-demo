@@ -1,7 +1,10 @@
 const express = require('express');
 const { Configuration, OpenAIApi } = require('openai');
 const app = express();
+const morgan = require('morgan'); // Import morgan for logging
 const port = 3000;
+
+app.use(morgan('combined')); // Use morgan middleware for logging
 
 // Middleware to parse JSON
 app.use(express.json());
@@ -19,6 +22,7 @@ app.get('/', (req, res) => {
 
 // Chat route
 app.post('/chat', async (req, res) => {
+    console.log('Incoming request:', req.body); // Log incoming request
     const { message } = req.body;
 
     if (!message) {
@@ -32,9 +36,10 @@ app.post('/chat', async (req, res) => {
         });
 
         const reply = response.data.choices[0].message.content;
+        console.log('OpenAI response:', reply); // Log OpenAI response
         res.send({ reply });
     } catch (error) {
-        console.error('Error communicating with OpenAI API:', error);
+        console.error('Error communicating with OpenAI API:', error.message); // Log error details
         res.status(500).send({ error: 'Failed to process the request' });
     }
 });
