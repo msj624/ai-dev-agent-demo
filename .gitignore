@@ -1,0 +1,6 @@
+.aider*
+owner.txt
+history.txt
+*.log
+__pycache__/
+.DS_Store
