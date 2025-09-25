@@ -4,3 +4,7 @@ history.txt
 *.log
 __pycache__/
 .DS_Store
+*.pyc
+.env
+!reports/
+!reports/*.txt
