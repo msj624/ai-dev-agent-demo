@@ -22,14 +22,16 @@ app.get('/', (req, res) => {
 
 // Chat route
 app.post('/chat', async (req, res) => {
-    console.log('Incoming request:', req.body); // Log incoming request
-    const { message } = req.body;
-
-    if (!message) {
-        return res.status(400).send({ error: 'Message is required' });
-    }
-
     try {
+        console.log('Incoming request:', req.body); // Log incoming request
+        const { message } = req.body;
+
+        if (!message) {
+            const error = new Error('Message is required');
+            error.status = 400;
+            throw error;
+        }
+
         const response = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo',
             messages: [{ role: 'user', content: message }],
@@ -39,9 +41,19 @@ app.post('/chat', async (req, res) => {
         console.log('OpenAI response:', reply); // Log OpenAI response
         res.send({ reply });
     } catch (error) {
-        console.error('Error communicating with OpenAI API:', error.message); // Log error details
-        res.status(500).send({ error: 'Failed to process the request' });
+        next(error); // Pass the error to the global error handler
     }
+});
+
+/**
+ * Global error-handling middleware
+ * Catches unhandled errors and sends a proper response
+ */
+app.use((err, req, res, next) => {
+    console.error('Unhandled error:', err.message); // Log the error
+    res.status(err.status || 500).send({
+        error: err.message || 'Internal Server Error',
+    });
 });
 
 // Start the server
