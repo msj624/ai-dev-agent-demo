@@ -1,0 +1,2 @@
+model: azure/gpt-4o
+weak-model: azure/gpt-4o-mini
