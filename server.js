@@ -57,6 +57,23 @@ app.use((err, req, res, next) => {
 });
 
 // Start the server
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
+});
+
+// Graceful shutdown handlers
+process.on('SIGTERM', () => {
+    console.log('Received SIGTERM signal. Starting graceful shutdown...');
+    server.close(() => {
+        console.log('Server closed. Process terminating...');
+        process.exit(0);
+    });
+});
+
+process.on('SIGINT', () => {
+    console.log('Received SIGINT signal (Ctrl+C). Starting graceful shutdown...');
+    server.close(() => {
+        console.log('Server closed. Process terminating...');
+        process.exit(0);
+    });
 });
